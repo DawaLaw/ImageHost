@@ -1,0 +1,14 @@
+﻿@model List<CloudBlockBlob>
+@{
+    ViewData["Title"] = "Uploaded Images";
+}
+
+@if (Model != null && Model.Count > 0)
+{
+    foreach (var item in Model)
+    {
+            <div class="imageBlock" style="max-width:768px; max-height:768px">
+                <a href="@Context.Request.Scheme://@Context.Request.Host@Url.Action("Image", "Home", new { name = item.Name })" target="_blank"><img class="thumbnail" src="@item.Uri.AbsoluteUri" alt="images" style="max-width:768px; max-height:400px" /></a><br />
+            </div>
+    }
+}

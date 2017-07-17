@@ -1,0 +1,29 @@
+﻿@model CloudBlockBlob
+@{ 
+    ViewData["Title"] = "View Image";
+}
+
+<div id="@Model">
+    <div class="image" style="max-width:768px; max-height:768px">
+        <a href="@Context.Request.Scheme://@Context.Request.Host@Url.Action("Image", "Home", new { name = Model.Name })" target="_blank"><img class="img-thumbnail" src="@Model.Uri.AbsoluteUri" alt="images" style="max-width:768px; max-height:400px" /></a><br />
+    </div>
+    <label for="direct">Direct Link</label>
+    <input type="text" class="form-control" disabled value="@Model.Uri.AbsoluteUri"/>
+    <label for="share">Share To Forum</label>
+    <textarea class="form-control" rows="5" disabled>[url="@Context.Request.Scheme://@Context.Request.Host@Url.Action("Image", "Home", new { name = Model.Name })"][img]@(Model.Uri.AbsoluteUri)[/img][/url]</textarea>
+    <label for="embed">Embed To Website</label>
+    <textarea class="form-control" rows="5" disabled>@System.Net.WebUtility.HtmlDecode($"<a href=\"{Context.Request.Scheme}://{Context.Request.Host}{Url.Action("Image", "Home", Model.Name)}\"><img src=\"{Model.Uri.AbsoluteUri}\"</a>")</textarea>
+    <br />
+    <form asp-controller="Home" asp-action="DeleteImage" method="post" class="form-horizontal" enctype="multipart/form-data">
+        <div class="form-group">
+            <label class="control-label">Delete Key</label>
+            <input type="number" class="form-control" name="key" />
+        </div>
+        <div class="form-group">
+            <input type="hidden" hidden class="form-control" name="name" value="@Model.Name" />
+        </div>
+        <div class="form-group">
+            <input type="submit" class="form-control btn btn-danger" value="Delete" />
+        </div>
+    </form>
+</div>

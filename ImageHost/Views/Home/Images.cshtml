@@ -1,0 +1,36 @@
+﻿@model List<CloudBlockBlob>
+@{
+    ViewData["Title"] = "Uploaded Images";
+}
+
+@if (Model != null && Model.Count > 0)
+{
+    foreach (var item in Model)
+    {
+        <div id="@item.Name">
+            <div class="image" style="max-width:768px; max-height:768px">
+                <a href="@Context.Request.Scheme://@Context.Request.Host@Url.Action("Image", "Home", new { name = item.Name })" target="_blank"><img class="img-thumbnail" src="@item.Uri.AbsoluteUri" alt="images" style="max-width:768px; max-height:400px" /></a><br />
+            </div>
+            <label for="direct">Direct Link</label>
+            <input type="text" class="form-control" disabled value="@item.Uri.AbsoluteUri" />
+            <label for="share">Share To Forum</label>
+            <textarea class="form-control" rows="5" disabled>[url="@Context.Request.Scheme://@Context.Request.Host@Url.Action("Image", "Home", new { name = item.Name })"][img]@(item.Uri.AbsoluteUri)[/img][/url]</textarea>
+            <label for="embed">Embed To Website</label>
+            <textarea class="form-control" rows="5" disabled>@System.Net.WebUtility.HtmlDecode($"<a href=\"{Context.Request.Scheme}://{Context.Request.Host}{Url.Action("Image", "Home", item.Name)}\"><img src=\"{item.Uri.AbsoluteUri}\"</a>")</textarea>
+            <br />
+            <span>Delete Key: @item.Properties.LastModified.Value.Ticks</span>
+            <br />
+            <div class="btn btn-default" onclick="deleteImage('@item.Name',@item.Properties.LastModified.Value.Ticks)">Delete</div>
+        </div>
+    }
+}
+
+<script>
+    function deleteImage(item, key) {
+        var url = "/Home/DeleteImage";
+        $.post(url, { Name: item, Key: key }, function (data) {
+            var element = document.getElementById(item);
+            element.innerHTML = "";
+        });
+    }
+</script>
